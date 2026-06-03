@@ -7,7 +7,7 @@ export async function GET() {
   try {
     const session = await getServerSession();
     if (!session?.user?.email)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ cart: [] });
 
     await connectDB();
     const user = await User.findOne({ email: session.user.email })
@@ -15,6 +15,7 @@ export async function GET() {
 
     return NextResponse.json({ cart: user?.cart || [] });
   } catch (error: any) {
+    console.error('Cart GET error:', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
@@ -30,11 +31,10 @@ export async function POST(req: Request) {
 
     if (action === 'add') {
       const user = await User.findOne({ email: session.user.email });
-      const existingItem = user?.cart.find(
-        (item: any) => item.productId.toString() === productId && item.size === size
+      const existing = user?.cart?.find(
+        (item: any) => item.productId?.toString() === productId && item.size === size
       );
-
-      if (existingItem) {
+      if (existing) {
         await User.findOneAndUpdate(
           { email: session.user.email, 'cart.productId': productId, 'cart.size': size },
           { $inc: { 'cart.$.quantity': 1 } }
@@ -66,6 +66,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ cart: updated?.cart || [] });
   } catch (error: any) {
+    console.error('Cart POST error:', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
