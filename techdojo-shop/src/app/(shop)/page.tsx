@@ -17,81 +17,164 @@ export default function HomePage() {
   useEffect(() => {
     fetch('/api/products')
       .then(r => r.json())
-      .then(d => { setFeatured((d.products || []).slice(0, 4)); setLoading(false); });
+      .then(d => { setFeatured((d.products || []).slice(0, 8)); setLoading(false); });
   }, []);
 
   return (
-    <div className="space-y-12">
-      {/* Hero */}
-      <div className="bg-black text-white rounded-3xl py-16" style={{ padding: '4rem 3rem' }}>
-        <div className="flex flex-col md:flex-row items-center justify-between gap-10">
-          <div className="flex-1">
-            <div className="inline-block bg-yellow-300 text-black text-xs font-bold px-3 py-1 rounded-full mb-5">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '3rem' }}>
+
+      {/* HERO */}
+      <div style={{
+        background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%)',
+        borderRadius: '24px',
+        padding: '4rem 3rem',
+        position: 'relative',
+        overflow: 'hidden'
+      }}>
+        {/* Decorative circles */}
+        <div style={{
+          position: 'absolute', top: '-60px', right: '-60px',
+          width: '300px', height: '300px', borderRadius: '50%',
+          background: 'rgba(234, 179, 8, 0.08)', pointerEvents: 'none'
+        }} />
+        <div style={{
+          position: 'absolute', bottom: '-40px', left: '40%',
+          width: '200px', height: '200px', borderRadius: '50%',
+          background: 'rgba(234, 179, 8, 0.05)', pointerEvents: 'none'
+        }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '2rem', flexWrap: 'wrap', position: 'relative', zIndex: 1 }}>
+          {/* Left content */}
+          <div style={{ flex: 1, minWidth: '280px' }}>
+            <div style={{
+              display: 'inline-block', background: '#EAB308',
+              color: '#000', fontSize: '12px', fontWeight: '700',
+              padding: '6px 14px', borderRadius: '999px', marginBottom: '1.5rem'
+            }}>
               ✨ New Collection 2026
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-4">
-              Shop Smarter<br />
-              with <span className="text-yellow-300">AI Chat</span>
+
+            <h1 style={{
+              fontSize: 'clamp(2rem, 4vw, 3.2rem)', fontWeight: '800',
+              color: '#ffffff', lineHeight: '1.15', marginBottom: '1rem'
+            }}>
+              Dress Better.<br />
+              <span style={{ color: '#EAB308' }}>Shop Smarter.</span>
             </h1>
-            <p className="text-gray-400 text-lg mb-8 max-w-md">
-              Browse products, add to cart and checkout — all through natural conversation.
+
+            <p style={{ color: '#94a3b8', fontSize: '1rem', lineHeight: '1.7', marginBottom: '2rem', maxWidth: '420px' }}>
+              Discover premium fashion from top brands. Browse, add to cart and checkout — all through our AI assistant or the store.
             </p>
-            <div className="flex gap-4 flex-wrap">
-              <Link href="/products"
-                className="bg-yellow-300 text-black font-semibold px-6 py-3 rounded-xl hover:bg-yellow-400 transition-colors">
-                Shop Now →
+
+            {/* Buttons */}
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <Link href="/products" style={{
+                background: '#EAB308', color: '#000',
+                fontWeight: '700', padding: '14px 28px',
+                borderRadius: '12px', textDecoration: 'none',
+                fontSize: '15px', transition: 'all 0.2s'
+              }}>
+                Shop Collection →
               </Link>
-              <Link href="/products"
-                className="border border-gray-600 text-white font-semibold px-6 py-3 rounded-xl hover:border-white transition-colors">
-                View Collection
+              <Link href="/products?category=t-shirt" style={{
+                background: 'transparent', color: '#fff',
+                fontWeight: '600', padding: '14px 28px',
+                borderRadius: '12px', textDecoration: 'none',
+                fontSize: '15px', border: '1px solid rgba(255,255,255,0.2)'
+              }}>
+                Browse T-Shirts
               </Link>
+            </div>
+
+            {/* Trust badges */}
+            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '2rem', flexWrap: 'wrap' }}>
+              {['🚚 Free Shipping', '🔄 Easy Returns', '🛡️ Secure Payment'].map(badge => (
+                <span key={badge} style={{ color: '#64748b', fontSize: '13px' }}>{badge}</span>
+              ))}
             </div>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-4 shrink-0">
+          {/* Right — Stats */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', flexShrink: 0 }}>
             {[
-              { label: 'Products', value: '15+' },
-              { label: 'Brands', value: '6+' },
-              { label: 'Categories', value: '2' },
-              { label: 'AI Powered', value: '100%' },
+              { label: 'Products', value: '45+', icon: '👕' },
+              { label: 'Brands', value: '8+', icon: '🏷️' },
+              { label: 'Happy Customers', value: '500+', icon: '😊' },
+              { label: 'AI Assistant', value: '24/7', icon: '🤖' },
             ].map(stat => (
-              <div key={stat.label} className="bg-gray-900 rounded-2xl p-5 text-center w-28">
-                <p className="text-yellow-300 text-2xl font-bold">{stat.value}</p>
-                <p className="text-gray-500 text-xs mt-1">{stat.label}</p>
+              <div key={stat.label} style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.08)',
+                borderRadius: '16px', padding: '1.2rem',
+                textAlign: 'center', minWidth: '110px'
+              }}>
+                <div style={{ fontSize: '1.5rem', marginBottom: '4px' }}>{stat.icon}</div>
+                <p style={{ color: '#EAB308', fontSize: '1.5rem', fontWeight: '800', margin: 0 }}>{stat.value}</p>
+                <p style={{ color: '#64748b', fontSize: '12px', margin: 0 }}>{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
       </div>
 
+      {/* Category Quick Links */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+        <Link href="/products?category=t-shirt" style={{ textDecoration: 'none' }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #1e293b, #334155)',
+            borderRadius: '16px', padding: '2rem',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            cursor: 'pointer', transition: 'transform 0.2s'
+          }}>
+            <div>
+              <p style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '4px', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase' }}>Category</p>
+              <h3 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: '800', margin: 0 }}>T-Shirts</h3>
+              <p style={{ color: '#EAB308', fontSize: '13px', margin: '4px 0 0' }}>10 styles →</p>
+            </div>
+            <span style={{ fontSize: '3rem' }}>👕</span>
+          </div>
+        </Link>
+        <Link href="/products?category=pants" style={{ textDecoration: 'none' }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #0f172a, #1e293b)',
+            borderRadius: '16px', padding: '2rem',
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            cursor: 'pointer'
+          }}>
+            <div>
+              <p style={{ color: '#94a3b8', fontSize: '12px', marginBottom: '4px', fontWeight: '600', letterSpacing: '1px', textTransform: 'uppercase' }}>Category</p>
+              <h3 style={{ color: '#fff', fontSize: '1.5rem', fontWeight: '800', margin: 0 }}>Pants</h3>
+              <p style={{ color: '#EAB308', fontSize: '13px', margin: '4px 0 0' }}>10 styles →</p>
+            </div>
+            <span style={{ fontSize: '3rem' }}>👖</span>
+          </div>
+        </Link>
+      </div>
+
       {/* Featured Products */}
       <div>
-        <div className="flex items-center justify-between mb-8">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
           <div>
-            <h2 className="text-2xl font-bold text-black">Featured Products</h2>
-            <p className="text-gray-500 text-sm mt-1">Hand-picked for you</p>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: '800', color: '#0f172a', margin: 0 }}>Featured Products</h2>
+            <p style={{ color: '#64748b', fontSize: '14px', margin: '4px 0 0' }}>Hand-picked for you</p>
           </div>
-          <Link href="/products"
-            className="text-black font-medium text-sm border border-gray-300 px-4 py-2 rounded-lg hover:border-black transition-colors">
+          <Link href="/products" style={{
+            color: '#0f172a', fontWeight: '600', fontSize: '14px',
+            border: '1px solid #e2e8f0', padding: '8px 16px',
+            borderRadius: '10px', textDecoration: 'none'
+          }}>
             View All →
           </Link>
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl h-80 animate-pulse border border-gray-100" />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1.5rem' }}>
+            {[...Array(8)].map((_, i) => (
+              <div key={i} style={{ background: '#fff', borderRadius: '16px', height: '320px', border: '1px solid #f1f5f9' }} />
             ))}
           </div>
-        ) : featured.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
-            <p className="text-4xl mb-3">📦</p>
-            <p className="text-gray-500 mb-2">No products yet</p>
-            <p className="text-gray-400 text-sm">Run the seed script to add products</p>
-          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '1.5rem' }}>
             {featured.map(product => (
               <ProductCard key={product._id} product={product} />
             ))}
@@ -99,20 +182,29 @@ export default function HomePage() {
         )}
       </div>
 
-      {/* Chat CTA */}
-      <div className="bg-black rounded-3xl p-10 md:p-14 text-center">
-        <h2 className="text-3xl font-bold text-white mb-3">
-          Try our <span className="text-yellow-300">AI Shopping Assistant</span>
+      {/* AI Chat CTA */}
+      <div style={{
+        background: 'linear-gradient(135deg, #0f172a, #1e293b)',
+        borderRadius: '24px', padding: '3rem 2rem', textAlign: 'center'
+      }}>
+        <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>🤖</div>
+        <h2 style={{ color: '#fff', fontSize: '1.8rem', fontWeight: '800', marginBottom: '0.5rem' }}>
+          Try our <span style={{ color: '#EAB308' }}>AI Shopping Assistant</span>
         </h2>
-        <p className="text-gray-400 mb-8 max-w-md mx-auto">
-          Just type what you're looking for — our bot finds it, adds it to your cart, and helps you checkout.
+        <p style={{ color: '#64748b', marginBottom: '1.5rem', maxWidth: '500px', margin: '0 auto 1.5rem' }}>
+          Just type what you're looking for — our bot finds it, adds it to your cart, and helps you checkout instantly.
         </p>
-        <div className="flex flex-wrap gap-3 justify-center">
-          {['"Show me running products"', '"Add Nike tee size M"', '"What\'s in my cart?"', '"Place my order"'].map(ex => (
-            <span key={ex} className="bg-gray-800 text-gray-300 text-sm px-4 py-2 rounded-full">{ex}</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'center' }}>
+          {['"Show me Nike products"', '"Add Adidas tee size M"', '"What\'s in my cart?"', '"Place my order"'].map(ex => (
+            <span key={ex} style={{
+              background: 'rgba(255,255,255,0.06)', color: '#94a3b8',
+              fontSize: '13px', padding: '8px 16px', borderRadius: '999px',
+              border: '1px solid rgba(255,255,255,0.08)'
+            }}>{ex}</span>
           ))}
         </div>
       </div>
+
     </div>
   );
 }

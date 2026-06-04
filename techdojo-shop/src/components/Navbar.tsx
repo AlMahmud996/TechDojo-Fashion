@@ -63,7 +63,7 @@ export default function Navbar () {
     { href: '/', label: 'Home' },
     { href: '/products', label: 'All Products' },
     { href: '/products?category=t-shirt', label: 'T-Shirts' },
-    { href: '/products?category=pants', label: 'Pants' },
+    { href: '/company', label: 'Company' },
   ];
 
   return (
