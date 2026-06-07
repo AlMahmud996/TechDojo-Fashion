@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/authOptions';
 import { connectDB } from '@/lib/mongodb';
 import User from '@/lib/models/User';
 
 export async function GET() {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
     if (!session?.user?.email)
       return NextResponse.json({ cart: [] });
 
@@ -13,25 +14,30 @@ export async function GET() {
     const user = await User.findOne({ email: session.user.email })
       .populate('cart.productId').lean();
 
-    return NextResponse.json({ cart: user?.cart || [] });
+    return NextResponse.json({ cart: (user as any)?.cart || [] });
   } catch (error: any) {
     console.error('Cart GET error:', error.message);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ cart: [] });
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authOptions);
+    console.log('Cart POST session:', session?.user?.email);
+
     if (!session?.user?.email)
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { productId, size, action } = await req.json();
+    const body = await req.json();
+    const { productId, size, action } = body;
+    console.log('Cart action:', action, productId, size);
+
     await connectDB();
 
     if (action === 'add') {
       const user = await User.findOne({ email: session.user.email });
-      const existing = user?.cart?.find(
+      const existing = (user as any)?.cart?.find(
         (item: any) => item.productId?.toString() === productId && item.size === size
       );
       if (existing) {
@@ -45,6 +51,7 @@ export async function POST(req: Request) {
           { $push: { cart: { productId, size, quantity: 1 } } }
         );
       }
+      console.log('✅ Cart: added', productId, size);
     }
 
     if (action === 'remove') {
@@ -52,6 +59,7 @@ export async function POST(req: Request) {
         { email: session.user.email },
         { $pull: { cart: { productId, size } } }
       );
+      console.log('✅ Cart: removed', productId, size);
     }
 
     if (action === 'clear') {
@@ -59,12 +67,13 @@ export async function POST(req: Request) {
         { email: session.user.email },
         { $set: { cart: [] } }
       );
+      console.log('✅ Cart: cleared');
     }
 
     const updated = await User.findOne({ email: session.user.email })
       .populate('cart.productId').lean();
 
-    return NextResponse.json({ cart: updated?.cart || [] });
+    return NextResponse.json({ cart: (updated as any)?.cart || [] });
   } catch (error: any) {
     console.error('Cart POST error:', error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });

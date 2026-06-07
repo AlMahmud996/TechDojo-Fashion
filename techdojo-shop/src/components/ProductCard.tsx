@@ -53,22 +53,23 @@ export default function ProductCard({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [noSizeWarning, setNoSizeWarning] = useState(false);
 
   const handleAddToCart = async () => {
     if (!selectedSize) {
-      // Custom alert replacement with better UX
-      const sizeButtons = document.querySelector('.size-selector');
-      if (sizeButtons) {
-        sizeButtons.classList.add('animate-pulse');
-        setTimeout(() => sizeButtons.classList.remove('animate-pulse'), 1000);
-      }
+      setNoSizeWarning(true);
+      setTimeout(() => setNoSizeWarning(false), 2000);
       return;
     }
     setAdding(true);
-    await addToCart(product._id, selectedSize);
+    try {
+      await addToCart(product._id, selectedSize);
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
+    } catch (error) {
+      console.error('Add to cart error:', error);
+    }
     setAdding(false);
-    setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
   };
 
   const getStockStatus = () => {
@@ -82,16 +83,15 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <div className="group relative bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-      
+
       {/* Wishlist Button */}
       <button
         onClick={() => setIsWishlisted(!isWishlisted)}
         className="absolute top-3 right-3 z-10 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110"
       >
         <Heart
-          className={`w-4 h-4 transition-colors duration-300 ${
-            isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600 hover:text-red-500'
-          }`}
+          className={`w-4 h-4 transition-colors duration-300 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600 hover:text-red-500'
+            }`}
         />
       </button>
 
@@ -105,15 +105,14 @@ export default function ProductCard({ product }: { product: Product }) {
         <img
           src={product.image}
           alt={product.name}
-          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${
-            imageLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
+          className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-110 ${imageLoaded ? 'opacity-100' : 'opacity-0'
+            }`}
           onLoad={() => setImageLoaded(true)}
         />
-        
+
         {/* Overlay Gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-        
+
         {/* Category Badge */}
         <div className="absolute top-3 left-3 flex gap-2">
           <span className="bg-gradient-to-r from-black to-gray-900 text-yellow-300 text-xs font-semibold px-3 py-1.5 rounded-full shadow-lg backdrop-blur-sm">
@@ -181,7 +180,10 @@ export default function ProductCard({ product }: { product: Product }) {
         <div className="mb-5">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-semibold text-gray-700">Select Size</span>
-            <span className="text-xs text-gray-400">Size Guide</span>
+            {noSizeWarning
+              ? <span className="text-xs text-red-500 font-semibold">⚠️ Pick a size first!</span>
+              : <span className="text-xs text-gray-400">Size Guide</span>
+            }
           </div>
           <div className="size-selector flex gap-2 flex-wrap">
             {product.sizes.map(({ size, stock }) => (
@@ -209,7 +211,7 @@ export default function ProductCard({ product }: { product: Product }) {
         {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
-          disabled={adding || stockStatus.text === 'Out of Stock'}
+          disabled={adding || stockStatus.text === 'Out of Stock' || !selectedSize}
           className={`relative w-full py-3 rounded-xl text-sm font-bold transition-all duration-300 overflow-hidden group/btn
             ${added
               ? 'bg-gradient-to-r from-green-500 to-green-600 text-white'
@@ -234,11 +236,11 @@ export default function ProductCard({ product }: { product: Product }) {
             ) : (
               <>
                 <ShoppingBag className="w-4 h-4" />
-                Add to Cart
+                {selectedSize ? 'Add to Cart' : 'Select a Size'}
               </>
             )}
           </span>
-          
+
           {/* Button hover effect */}
           {!added && stockStatus.text !== 'Out of Stock' && (
             <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-500 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300" />
