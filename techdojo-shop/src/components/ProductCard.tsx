@@ -152,7 +152,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 <Star key={star} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
               ))}
             </div>
-            <span className="text-xs text-gray-500">(128 reviews)</span>
+            <span className="text-xs text-gray-500">({Math.floor(Math.random() * 200) + 20} reviews)</span>
           </div>
         </div>
 
